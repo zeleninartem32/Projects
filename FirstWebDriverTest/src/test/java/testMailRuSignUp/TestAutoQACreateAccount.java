@@ -1,7 +1,6 @@
 package testMailRuSignUp;
 
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -20,8 +19,6 @@ public class TestAutoQACreateAccount {
     private final String strFirstName = "robot";
     private final String strLastName = "mailers";
     private final String strBirthday = "12.02.1998";
-
-    private final By strUserEmail = By.id("PH_user-email");
 
     private String[] genBirt(){
 
