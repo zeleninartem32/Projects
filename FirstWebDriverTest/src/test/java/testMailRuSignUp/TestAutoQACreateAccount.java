@@ -2,6 +2,8 @@ package testMailRuSignUp;
 
 import cn.easyproject.easyocr.EasyOCR;
 import cn.easyproject.easyocr.ImageType;
+import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -17,16 +19,21 @@ public class TestAutoQACreateAccount {
     WebDriver driver;
     AutoQACreateAccount objCreateAccount;
 
+    String strTarjetURL = "https://mail.ru";
     String strFirstName = "robot";
     String strLastName = "mailers";
     String strBirthday = "12.02.1998";
 
+    By strUserEmail = By.id("PH_user-email");
 
     private String[] genBirt(){
 
         return strBirthday.split("[.]");
     }
 
+    //This method generate password mixing user name (first/last) and birthday
+    //In data: none
+    //return: type String contains generated password
     private String genPasswd(){
         String strPass1=(strFirstName+strLastName).toLowerCase();
         String strPass2=genBirt()[0]+genBirt()[1]+genBirt()[2];
@@ -50,40 +57,25 @@ public class TestAutoQACreateAccount {
         return strPasswd;
     }
 
-    private String reCaptcha(String strFilename){
-        EasyOCR ocr = new EasyOCR();
-        String result=ocr.discernAndAutoCleanImage(strFilename, ImageType.CAPTCHA_HOLLOW_CHAR);
-/*        File imageFile = new File(strFilename);
-        Tesseract instance = Tesseract.getInstance(); // JNA Interface Mapping
-        instance.setDatapath("d:\\temp\\tessdata");
-        String result="";
-        try {
-            result = instance.doOCR(imageFile);
-            System.out.println(result);
-        } catch (TesseractException e) {
-            System.err.println(e.getMessage());
-        }
-*/
-        return result;
-    }
 
-//    @BeforeTest // initializing system
+    @BeforeTest // initializing system
+                // create instance
     public void init() {
         System.setProperty("webdriver.gecko.driver","C:\\Program Files\\Mozilla Firefox\\wires.exe");
         driver = new RemoteWebDriver(DesiredCapabilities.firefox());
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.get("https://mail.ru");
+        driver.get(strTarjetURL);
     }
-
 
     @Test
     public void testMailRuAccountCreate() {
-//        System.setProperty("java.io.tmpdir","D:\\Temp");
-//        System.out.println(System.getProperty("java.io.tmpdir"));
-//        System.out.println(reCaptcha("C:\\Users\\Fox\\Pictures\\2.png"));
         objCreateAccount = new AutoQACreateAccount(driver);
-        objCreateAccount.createAutoQAAccount(strFirstName,strLastName,genPasswd(),genBirt());
+        String[] strBirth = genBirt();
+        objCreateAccount.createAutoQAAccount(strFirstName,strLastName,genPasswd(),strBirth);
 
+        driver.get(strTarjetURL);
+        String strTarjetString = strFirstName + "." + strLastName + "." + "male" + "." + strBirth[2]+"@mail.ru";
+        Assert.assertEquals(driver.findElement(this.strUserEmail).getText(),strTarjetString);
     }
 
     @AfterTest //close browser and destroy driver

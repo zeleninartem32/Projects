@@ -41,11 +41,18 @@ public class AutoQACreateAccount {
     private By captchaImg = By.xpath("//img[contains(@class,'js-captchaImage')]");
     private By confCapButton = By.xpath("//button[contains(@class,'confirm-ok')]");
 
+    //Method waiting to page loadin and visibily element
+    //In data: instance of WebDriver; and WebElement to wait
+    //return: none
     private void waitToPageLoad(WebDriver driver, By element) {
         (new WebDriverWait(driver, 10)).until(ExpectedConditions.visibilityOfElementLocated(element));
     }
 
     // Private section of methods
+    //Method create screenshot and crop captcha on it, save images to temp directory
+    //In data: type String contains image type (png, jpg etc.) screenshot image file name
+        // and captcha image filename
+    //return: none
     private void createCapImageFromScreenShot(String strImageType,
                                               String strScreenShotFileName,
                                               String strCAPTCHAFileName) {
@@ -76,17 +83,36 @@ public class AutoQACreateAccount {
 
     }
 
+    //This method return text from security image
+    //In data: type String contains File name
+    //return: type String contains recognized text
     private String reCaptcha(String strFilename) {
         EasyOCR ocr = new EasyOCR();
         return ocr.discernAndAutoCleanImage(strFilename, ImageType.CAPTCHA_HOLLOW_CHAR);
+/*        File imageFile = new File(strFilename);
+        Tesseract instance = Tesseract.getInstance(); // JNA Interface Mapping
+        instance.setDatapath("d:\\temp\\tessdata");
+        String result="";
+        try {
+            result = instance.doOCR(imageFile);
+            System.out.println(result);
+        } catch (TesseractException e) {
+            System.err.println(e.getMessage());
+        }
+*/
     }
 
     // Public section of methods
-
+    //Constructor
+    //In data: instance of WebDriver
+    //return: none
     public AutoQACreateAccount(WebDriver driver) {
         this.driver = driver;
     }
 
+    //Method set user name (first and last) on account form
+    //In data: type String contains first and last name
+    //return: none
     public void setUserName(String srtFirstName, String strLastName) {
         By elFirstName = By.id(driver.findElement(this.classFirstName).getAttribute("for").toString());
         By elLastName = By.id(driver.findElement(this.classLastName).getAttribute("for").toString());
@@ -94,6 +120,9 @@ public class AutoQACreateAccount {
         driver.findElement(elLastName).sendKeys(strLastName);
     }
 
+    //Method set password on account form
+    //In data: type String contains password
+    //return: none
     public void setPasswd(String strPasswd) {
         By elPasswd = By.id(driver.findElement(this.classPasswd).getAttribute("for").toString());
         By elConfPasswd = By.id(driver.findElement(this.classConfPasswd).getAttribute("for").toString());
@@ -101,11 +130,17 @@ public class AutoQACreateAccount {
         driver.findElement(elConfPasswd).sendKeys(strPasswd);
     }
 
+    //Method set user login on account form
+    //In data: type String contains login
+    //return: none
     public void setLogin(String strLogin) {
         By elLogin = By.id(driver.findElement(this.classLogin).getAttribute("for").toString());
         driver.findElement(elLogin).sendKeys(strLogin);
     }
 
+    //Method select day, month, year on account form
+    //In data: type String contains day, month,year
+    //return: none
     public void setBirthDay(String birthDay, String birthMonth, String birthYear) {
         Select selectDay = new Select(driver.findElement(this.selectDay));
         selectDay.selectByValue(birthDay);
@@ -115,14 +150,23 @@ public class AutoQACreateAccount {
         selectYear.selectByValue(birthYear);
     }
 
+    //Method set male gender on account form
+    //In data: none
+    //return: none
     public void setGenderMale() {
         driver.findElement(this.getSelectGender).click();
     }
 
+    //Method submitting data on account form
+    //In data: none
+    //return: none
     public void clickSubmitButton() {
         driver.findElement(this.confirmButton).click();
     }
 
+    //Method set CAPTCHA text on account form
+    //In data: none
+    //return: none
 
     public void captchaForm() {
 
@@ -134,25 +178,25 @@ public class AutoQACreateAccount {
 //        driver.findElement(confCapButton).click();
 
     }
-
+    //Constructor
     public void createAutoQAAccount(String firstName, String lastName, String passwd,
                                     String[] strBirthDay) {
-        this.driver.findElement(regUrl).click();
+        this.driver.findElement(regUrl).click(); //Search registration URL and click on it
 
-        waitToPageLoad(this.driver, confirmButton);
+        waitToPageLoad(this.driver, confirmButton); //Wait for page load
 
-        this.setUserName(firstName, lastName);
+        this.setUserName(firstName, lastName);//Set user name
 
-        this.setBirthDay(strBirthDay[0], strBirthDay[1], strBirthDay[2]);
+        this.setBirthDay(strBirthDay[0], strBirthDay[1], strBirthDay[2]);//Select birthday
 
-        this.setGenderMale();
+        this.setGenderMale();//Select gender
 
-        this.setLogin(firstName + "." + lastName + "." + "male" + "." + strBirthDay[2]);
+        this.setLogin(firstName + "." + lastName + "." + "male" + "." + strBirthDay[2]);//Set user name login
 
-        this.setPasswd(passwd);
+        this.setPasswd(passwd); // Set password
 
-        clickSubmitButton();
-        captchaForm();
+        clickSubmitButton();//Submitting
+        captchaForm();//Generate and submitting CAPTCHA text
     }
 
 }
