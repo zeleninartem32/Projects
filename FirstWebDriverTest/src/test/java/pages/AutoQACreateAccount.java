@@ -17,29 +17,29 @@ import java.io.IOException;
  * Created by Fox on 01.12.2016.
  */
 public class AutoQACreateAccount {
-    private String strTempDir = System.getProperty("java.io.tmpdir");
-    private String strImageType = "png";
-    private String strScreenShotFileName = "1" + "." + strImageType;
-    private String strCAPTCHAFileName = "2" + "." + strImageType;
+    private final String strTempDir = System.getProperty("java.io.tmpdir");
+    private final String strImageType = "png";
+    private final String strScreenShotFileName = "1" + "." + strImageType;
+    private final String strCAPTCHAFileName = "2" + "." + strImageType;
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
-    private By regUrl = By.id("PH_regLink");
-    private By inPutClass = By.xpath("//label[text()='Имя']");
-    private By classFirstName = By.xpath("//label[text()='Имя']");
-    private By classLastName = By.xpath("//label[text()='Фамилия']");
-    private By selectDay = By.xpath("//select[contains(@class,'qc-select-day')]");
-    private By selectMonth = By.xpath("//select[contains(@class,'qc-select-month')]");
-    private By selectYear = By.xpath("//select[contains(@class,'qc-select-year')]");
-    private By classLogin = By.xpath("//label[text()='Почтовый ящик']");
-    private By classPasswd = By.xpath("//label[text()='Пароль']");
-    private By classConfPasswd = By.xpath("//label[text()='Повторите пароль']");
-    private By confirmButton = By.xpath("//button[contains(@value,'Зарегистрироваться')]");
-    private By getSelectGender = By.xpath("//input[contains(@type,'radio')]");
+    private final By regUrl = By.id("PH_regLink");
+    private final By classFirstName = By.xpath("//label[text()='Имя']");
+    private final By classLastName = By.xpath("//label[text()='Фамилия']");
+    private final By selectDay = By.xpath("//select[contains(@class,'qc-select-day')]");
+    private final By selectMonth = By.xpath("//select[contains(@class,'qc-select-month')]");
+    private final By selectYear = By.xpath("//select[contains(@class,'qc-select-year')]");
+    private final By classLogin = By.xpath("//label[text()='Почтовый ящик']");
+    private final By classPasswd = By.xpath("//label[text()='Пароль']");
+    private final By classConfPasswd = By.xpath("//label[text()='Повторите пароль']");
+    private final By confirmButton = By.xpath("//button[contains(@value,'Зарегистрироваться')]");
+    private final By getSelectGender = By.xpath("//input[contains(@type,'radio')]");
 
-    private By captchaInput = By.xpath("//input[contains(@name,'code')]");
-    private By captchaImg = By.xpath("//img[contains(@class,'js-captchaImage')]");
-    private By confCapButton = By.xpath("//button[contains(@class,'confirm-ok')]");
+    private final By captchaInput = By.xpath("//input[contains(@name,'code')]");
+    private final By captchaImg = By.xpath("//img[contains(@class,'js-captchaImage')]");
+    private final By confCapButton = By.xpath("//button[contains(@class,'confirm-ok')]");
+
 
     //Method waiting to page loadin and visibily element
     //In data: instance of WebDriver; and WebElement to wait
@@ -48,7 +48,7 @@ public class AutoQACreateAccount {
         (new WebDriverWait(driver, 10)).until(ExpectedConditions.visibilityOfElementLocated(element));
     }
 
-    // Private section of methods
+
     //Method create screenshot and crop captcha on it, save images to temp directory
     //In data: type String contains image type (png, jpg etc.) screenshot image file name
         // and captcha image filename
@@ -113,7 +113,7 @@ public class AutoQACreateAccount {
     //Method set user name (first and last) on account form
     //In data: type String contains first and last name
     //return: none
-    public void setUserName(String srtFirstName, String strLastName) {
+    private void setUserName(String srtFirstName, String strLastName) {
         By elFirstName = By.id(driver.findElement(this.classFirstName).getAttribute("for").toString());
         By elLastName = By.id(driver.findElement(this.classLastName).getAttribute("for").toString());
         driver.findElement(elFirstName).sendKeys(srtFirstName);
@@ -123,7 +123,7 @@ public class AutoQACreateAccount {
     //Method set password on account form
     //In data: type String contains password
     //return: none
-    public void setPasswd(String strPasswd) {
+    private void setPasswd(String strPasswd) {
         By elPasswd = By.id(driver.findElement(this.classPasswd).getAttribute("for").toString());
         By elConfPasswd = By.id(driver.findElement(this.classConfPasswd).getAttribute("for").toString());
         driver.findElement(elPasswd).sendKeys(strPasswd);
@@ -133,7 +133,7 @@ public class AutoQACreateAccount {
     //Method set user login on account form
     //In data: type String contains login
     //return: none
-    public void setLogin(String strLogin) {
+    private void setLogin(String strLogin) {
         By elLogin = By.id(driver.findElement(this.classLogin).getAttribute("for").toString());
         driver.findElement(elLogin).sendKeys(strLogin);
     }
@@ -141,7 +141,7 @@ public class AutoQACreateAccount {
     //Method select day, month, year on account form
     //In data: type String contains day, month,year
     //return: none
-    public void setBirthDay(String birthDay, String birthMonth, String birthYear) {
+    private void setBirthDay(String birthDay, String birthMonth, String birthYear) {
         Select selectDay = new Select(driver.findElement(this.selectDay));
         selectDay.selectByValue(birthDay);
         Select selectMonth = new Select(driver.findElement(this.selectMonth));
@@ -153,14 +153,14 @@ public class AutoQACreateAccount {
     //Method set male gender on account form
     //In data: none
     //return: none
-    public void setGenderMale() {
+    private void setGenderMale() {
         driver.findElement(this.getSelectGender).click();
     }
 
     //Method submitting data on account form
     //In data: none
     //return: none
-    public void clickSubmitButton() {
+    private void clickSubmitButton() {
         driver.findElement(this.confirmButton).click();
     }
 
@@ -168,7 +168,7 @@ public class AutoQACreateAccount {
     //In data: none
     //return: none
 
-    public void captchaForm() {
+    private void captchaForm() {
 
         waitToPageLoad(this.driver, captchaImg);
 

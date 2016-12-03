@@ -1,7 +1,5 @@
 package testMailRuSignUp;
 
-import cn.easyproject.easyocr.EasyOCR;
-import cn.easyproject.easyocr.ImageType;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -16,15 +14,14 @@ import java.util.concurrent.TimeUnit;
  * Created by Fox on 01.12.2016.
  */
 public class TestAutoQACreateAccount {
-    WebDriver driver;
-    AutoQACreateAccount objCreateAccount;
+    private WebDriver driver;
 
-    String strTarjetURL = "https://mail.ru";
-    String strFirstName = "robot";
-    String strLastName = "mailers";
-    String strBirthday = "12.02.1998";
+    private final String strTarjetURL = "https://mail.ru";
+    private final String strFirstName = "robot";
+    private final String strLastName = "mailers";
+    private final String strBirthday = "12.02.1998";
 
-    By strUserEmail = By.id("PH_user-email");
+    private final By strUserEmail = By.id("PH_user-email");
 
     private String[] genBirt(){
 
@@ -69,7 +66,7 @@ public class TestAutoQACreateAccount {
 
     @Test
     public void testMailRuAccountCreate() {
-        objCreateAccount = new AutoQACreateAccount(driver);
+        AutoQACreateAccount objCreateAccount = new AutoQACreateAccount(driver);
         String[] strBirth = genBirt();
         objCreateAccount.createAutoQAAccount(strFirstName,strLastName,genPasswd(),strBirth);
 
