@@ -178,7 +178,7 @@ public class AutoQACreateAccount {
 //        driver.findElement(confCapButton).click();
 
     }
-    //Constructor
+
     public void createAutoQAAccount(String firstName, String lastName, String passwd,
                                     String[] strBirthDay) {
         this.driver.findElement(regUrl).click(); //Search registration URL and click on it

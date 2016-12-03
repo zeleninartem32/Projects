@@ -66,13 +66,14 @@ public class TestAutoQACreateAccount {
 
     @Test
     public void testMailRuAccountCreate() {
-        AutoQACreateAccount objCreateAccount = new AutoQACreateAccount(driver);
         String[] strBirth = genBirt();
+        String strTarjetString = strFirstName + "." + strLastName + "." + "male" + "." + strBirth[2]+"@mail.ru";
+
+        AutoQACreateAccount objCreateAccount = new AutoQACreateAccount(driver);
         objCreateAccount.createAutoQAAccount(strFirstName,strLastName,genPasswd(),strBirth);
 
-        driver.get(strTarjetURL);
-        String strTarjetString = strFirstName + "." + strLastName + "." + "male" + "." + strBirth[2]+"@mail.ru";
-        Assert.assertEquals(driver.findElement(this.strUserEmail).getText(),strTarjetString);
+        AutoQAHomePage objHomePage = new AutoQAHomePage(this.driver);
+        Assert.assertTrue(objHomePage.getLoginUserNameFromDashboard().contains(strTarjetString));
     }
 
     @AfterTest //close browser and destroy driver
