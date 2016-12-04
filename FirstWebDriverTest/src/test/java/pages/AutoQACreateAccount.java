@@ -2,6 +2,7 @@ package pages;
 
 import cn.easyproject.easyocr.EasyOCR;
 import cn.easyproject.easyocr.ImageType;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -13,11 +14,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static java.lang.Math.random;
+
 /**
  * Created by Fox on 01.12.2016.
  */
 public class AutoQACreateAccount {
-    private final String strTempDir = System.getProperty("java.io.tmpdir");
     private final String strImageType = "png";
     private final String strScreenShotFileName = "1" + "." + strImageType;
     private final String strCAPTCHAFileName = "2" + "." + strImageType;
@@ -31,6 +33,9 @@ public class AutoQACreateAccount {
     private final By selectMonth = By.xpath("//select[contains(@class,'qc-select-month')]");
     private final By selectYear = By.xpath("//select[contains(@class,'qc-select-year')]");
     private final By classLogin = By.xpath("//label[text()='Почтовый ящик']");
+    private final By classLoginFild = By.id("loginField");
+    private final By classLoginSuccess = By.xpath("//span[@class,'success')]");
+
     private final By classPasswd = By.xpath("//label[text()='Пароль']");
     private final By classConfPasswd = By.xpath("//label[text()='Повторите пароль']");
     private final By confirmButton = By.xpath("//button[contains(@value,'Зарегистрироваться')]");
@@ -39,6 +44,7 @@ public class AutoQACreateAccount {
     private final By captchaInput = By.xpath("//input[contains(@name,'code')]");
     private final By captchaImg = By.xpath("//img[contains(@class,'js-captchaImage')]");
     private final By confCapButton = By.xpath("//button[contains(@class,'confirm-ok')]");
+    private final By confErrorMessage = By.xpath("//div[contains(@class,'js-error form__message_error')]");
 
 
     //Method waiting to page loadin and visibily element
@@ -51,13 +57,14 @@ public class AutoQACreateAccount {
 
     //Method create screenshot and crop captcha on it, save images to temp directory
     //In data: type String contains image type (png, jpg etc.) screenshot image file name
-        // and captcha image filename
+    // and captcha image filename
     //return: none
     private void createCapImageFromScreenShot(String strImageType,
                                               String strScreenShotFileName,
                                               String strCAPTCHAFileName) {
-        byte[] imgBase64Png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 
+        String strTempDir = System.getProperty("java.io.tmpdir");
+        byte[] imgBase64Png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
         try {
             FileOutputStream imageOutFile = new FileOutputStream(strTempDir + File.separator + strScreenShotFileName);
 
@@ -73,9 +80,9 @@ public class AutoQACreateAccount {
         Dimension section = driver.findElement(captchaImg).getSize();
 
         try {
-            BufferedImage image = ImageIO.read(new File(strScreenShotFileName));
+            BufferedImage image = ImageIO.read(new File(strTempDir + File.separator + strScreenShotFileName));
             image = image.getSubimage(start.x, start.y, section.width, section.height);
-            ImageIO.write(image, strImageType, new File(strCAPTCHAFileName));
+            ImageIO.write(image, strImageType, new File(strTempDir + File.separator + strCAPTCHAFileName));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,8 +94,12 @@ public class AutoQACreateAccount {
     //In data: type String contains File name
     //return: type String contains recognized text
     private String reCaptcha(String strFilename) {
+        System.setProperty("java.io.tmpdir", "D:\\Temp");
+
+        createCapImageFromScreenShot(strImageType, strScreenShotFileName, strCAPTCHAFileName);
+
         EasyOCR ocr = new EasyOCR();
-        return ocr.discernAndAutoCleanImage(strFilename, ImageType.CAPTCHA_HOLLOW_CHAR);
+        return ocr.discernAndAutoCleanImage(System.getProperty("java.io.tmpdir") + File.separator + strFilename, ImageType.CAPTCHA_WHITE_CHAR);
 /*        File imageFile = new File(strFilename);
         Tesseract instance = Tesseract.getInstance(); // JNA Interface Mapping
         instance.setDatapath("d:\\temp\\tessdata");
@@ -136,6 +147,7 @@ public class AutoQACreateAccount {
     private void setLogin(String strLogin) {
         By elLogin = By.id(driver.findElement(this.classLogin).getAttribute("for").toString());
         driver.findElement(elLogin).sendKeys(strLogin);
+//        if (this.driver.findElement(By.id("loginField")).getAttribute("class").contains("sig-success-on")))
     }
 
     //Method select day, month, year on account form
@@ -169,18 +181,27 @@ public class AutoQACreateAccount {
     //return: none
 
     private void captchaForm() {
+        int count = 10;
+        do {
 
-        waitToPageLoad(this.driver, captchaImg);
+            count--;
+            waitToPageLoad(this.driver, captchaImg);
 
-        createCapImageFromScreenShot(strImageType,strScreenShotFileName,strCAPTCHAFileName);
-
-        driver.findElement(captchaInput).sendKeys(reCaptcha(strCAPTCHAFileName));
-//        driver.findElement(confCapButton).click();
-
+            driver.findElement(captchaInput).sendKeys(reCaptcha(strCAPTCHAFileName));
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            driver.findElement(confCapButton).click();
+        }
+        while ((!driver.findElement(confErrorMessage).getText().equals(""))||count>0);
     }
 
     public void createAutoQAAccount(String firstName, String lastName, String passwd,
                                     String[] strBirthDay) {
+        WebDriverWait wdWait = new WebDriverWait(driver,5);
+
         this.driver.findElement(regUrl).click(); //Search registration URL and click on it
 
         waitToPageLoad(this.driver, confirmButton); //Wait for page load
@@ -192,6 +213,7 @@ public class AutoQACreateAccount {
         this.setGenderMale();//Select gender
 
         this.setLogin(firstName + "." + lastName + "." + "male" + "." + strBirthDay[2]);//Set user name login
+        wdWait.until(ExpectedConditions.visibilityOf(driver.findElement(classLoginFild).findElement(classLoginSuccess)));
 
         this.setPasswd(passwd); // Set password
 

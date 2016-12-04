@@ -36,8 +36,6 @@ public class TestAutoQACreateAccount {
         strPass1 = strPass1.substring(0,strPass1.length()-1)+strPass1.substring(strPass1.length()-1).toUpperCase();
 
         String strPasswd ="";
-        System.out.println(strPass1);
-        System.out.println(strPass2);
         for (int i=0,ii=0,jj=0;i<(strPass1+strPass2).length();i++){
             if (ii<strPass1.length()){
                 strPasswd+=strPass1.substring(ii,ii+1);
@@ -73,9 +71,8 @@ public class TestAutoQACreateAccount {
         Assert.assertTrue(objHomePage.getLoginUserNameFromDashboard().contains(strTarjetString));
     }
 
-    @AfterTest //close browser and destroy driver
+    @AfterTest // Close all browser windows and safely end the session
     public void unInit() {
-        // Close all browser windows and safely end the session
 //        driver.quit();
     }
 }
