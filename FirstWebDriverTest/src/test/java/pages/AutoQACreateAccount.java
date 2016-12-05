@@ -146,7 +146,9 @@ public class AutoQACreateAccount {
     //return: none
     private void setLogin(String strLogin) {
         By elLogin = By.id(driver.findElement(this.classLogin).getAttribute("for").toString());
+
         driver.findElement(elLogin).sendKeys(strLogin);
+
 //        if (this.driver.findElement(By.id("loginField")).getAttribute("class").contains("sig-success-on")))
     }
 
@@ -188,11 +190,6 @@ public class AutoQACreateAccount {
             waitToPageLoad(this.driver, captchaImg);
 
             driver.findElement(captchaInput).sendKeys(reCaptcha(strCAPTCHAFileName));
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             driver.findElement(confCapButton).click();
         }
         while ((!driver.findElement(confErrorMessage).getText().equals(""))||count>0);
@@ -200,7 +197,7 @@ public class AutoQACreateAccount {
 
     public void createAutoQAAccount(String firstName, String lastName, String passwd,
                                     String[] strBirthDay) {
-        WebDriverWait wdWait = new WebDriverWait(driver,5);
+//        WebDriverWait wdWait = new WebDriverWait(driver,5);
 
         this.driver.findElement(regUrl).click(); //Search registration URL and click on it
 
@@ -213,7 +210,7 @@ public class AutoQACreateAccount {
         this.setGenderMale();//Select gender
 
         this.setLogin(firstName + "." + lastName + "." + "male" + "." + strBirthDay[2]);//Set user name login
-        wdWait.until(ExpectedConditions.visibilityOf(driver.findElement(classLoginFild).findElement(classLoginSuccess)));
+//        wdWait.until(ExpectedConditions.visibilityOf(driver.findElement(classLoginFild).findElement(classLoginSuccess)));
 
         this.setPasswd(passwd); // Set password
 
